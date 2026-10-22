@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a bank account with a balance and the ability to freeze transactions.
  *
@@ -5,13 +8,37 @@
  * the requested amount is finite and greater than zero.
  */
 public class BankAccount {
+  private final String ownerName;
   private double balance;
   private boolean isFrozen;
+  private final List<Transaction> transactionHistory;
 
-  /** Creates an unfrozen bank account with a zero balance. */
+  /**
+   * Creates an unfrozen bank account with a zero balance and unspecified owner.
+   */
   public BankAccount() {
+    this("Unknown");
+  }
+
+  /**
+   * Creates an unfrozen bank account for the specified owner.
+   *
+   * @param ownerName the account owner's name
+   */
+  public BankAccount(String ownerName) {
+    this.ownerName = ownerName;
     this.balance = 0.0;
     this.isFrozen = false;
+    this.transactionHistory = new ArrayList<>();
+  }
+
+  /**
+   * Returns the name of this account's owner.
+   *
+   * @return the owner's name
+   */
+  public String getOwnerName() {
+    return ownerName;
   }
 
   /**
@@ -32,6 +59,7 @@ public class BankAccount {
     }
 
     balance += amount;
+    transactionHistory.add(new Transaction("Deposit", amount));
     System.out.printf("Current balance: %.2f%n", balance);
   }
 
@@ -58,7 +86,17 @@ public class BankAccount {
     }
 
     balance -= amount;
+    transactionHistory.add(new Transaction("Withdraw", amount));
     System.out.printf("Current balance: %.2f%n", balance);
+  }
+
+  /**
+   * Returns the transactions made on this account.
+   *
+   * @return the transaction history
+   */
+  public List<Transaction> getTransactionHistory() {
+    return new ArrayList<>(transactionHistory);
   }
 
   /**

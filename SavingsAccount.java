@@ -5,23 +5,12 @@
  * {@link BankAccount}.
  */
 public class SavingsAccount extends BankAccount {
-  private String ownerName;
-
   /**
    * Creates a savings account for the specified owner.
    *
    * @param ownerName the name of the account owner
    */
   public SavingsAccount(String ownerName) {
-    this.ownerName = ownerName;
-  }
-
-  /**
-   * Returns the name of this account's owner.
-   *
-   * @return the owner's name
-   */
-  public String getOwnerName() {
-    return ownerName;
+    super(ownerName);
   }
 }
