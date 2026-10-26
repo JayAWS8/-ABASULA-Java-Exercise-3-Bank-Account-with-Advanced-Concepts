@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import exception.AccountFrozenException;
+import exception.InsufficientFundsException;
+import exception.InvalidAmountException;
+
 /**
  * Represents a bank account with a balance and the ability to freeze transactions.
  *
@@ -48,14 +52,12 @@ public class BankAccount {
    */
   public void deposit(double amount) {
     if (isFrozen) {
-      System.out.println("Account is FROZEN. Unable to transact.");
-      return;
+      throw new AccountFrozenException();
     }
 
     System.out.printf("Amount deposited: %.2f%n", amount);
     if (!isValidAmount(amount)) {
-      System.out.println("Invalid amount. Must be greater than 0");
-      return;
+      throw new InvalidAmountException();
     }
 
     balance += amount;
@@ -70,19 +72,16 @@ public class BankAccount {
    */
   public void withdraw(double amount) {
     if (isFrozen) {
-      System.out.println("Account is FROZEN. Unable to transact.");
-      return;
+      throw new AccountFrozenException();
     }
 
     System.out.printf("Amount withdrawn: %.2f%n", amount);
     if (!isValidAmount(amount)) {
-      System.out.println("Invalid amount. Must be greater than 0");
-      return;
+      throw new InvalidAmountException();
     }
 
     if (amount > balance) {
-      System.out.printf("Insufficient balance. Current balance: %.2f%n", balance);
-      return;
+      throw new InsufficientFundsException(balance);
     }
 
     balance -= amount;
