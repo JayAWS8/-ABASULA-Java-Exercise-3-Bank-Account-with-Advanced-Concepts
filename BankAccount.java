@@ -6,10 +6,7 @@ import exception.InsufficientFundsException;
 import exception.InvalidAmountException;
 
 /**
- * Represents a bank account with a balance and the ability to freeze transactions.
- *
- * <p>Deposits and withdrawals are accepted only when the account is unfrozen and
- * the requested amount is finite and greater than zero.
+ * Represents a bank account with balance management and frozen transaction controls.
  */
 public class BankAccount {
   private final String ownerName;
@@ -18,7 +15,7 @@ public class BankAccount {
   private final List<Transaction> transactionHistory;
 
   /**
-   * Creates an unfrozen bank account with a zero balance and unspecified owner.
+   * Creates an unfrozen bank account with a zero balance and default owner name.
    */
   public BankAccount() {
     this("Unknown");
@@ -36,102 +33,79 @@ public class BankAccount {
     this.transactionHistory = new ArrayList<>();
   }
 
-  /**
-   * Returns the name of this account's owner.
-   *
-   * @return the owner's name
-   */
   public String getOwnerName() {
     return ownerName;
   }
 
   /**
-   * Deposits a positive, finite amount into this account.
+   * Deposits funds into this account.
    *
-   * @param amount the amount to deposit; must be greater than zero and finite
+   * @param amount the amount to deposit
+   * @throws AccountFrozenException if the account is frozen
+   * @throws InvalidAmountException if the amount is less than or equal to zero
    */
-  public void deposit(double amount) {
+  public void deposit(double amount) throws AccountFrozenException, InvalidAmountException {
     if (isFrozen) {
-      throw new AccountFrozenException();
+      throw new AccountFrozenException("Account is FROZEN. Unable to transact.");
     }
 
     System.out.printf("Amount deposited: %.2f%n", amount);
     if (!isValidAmount(amount)) {
-      throw new InvalidAmountException();
+      throw new InvalidAmountException("Invalid amount. Must be greater than 0");
     }
 
     balance += amount;
     transactionHistory.add(new Transaction("Deposit", amount));
-    System.out.printf("Current balance: %.2f%n", balance);
   }
 
   /**
-   * Withdraws a positive, finite amount if the account has sufficient funds.
+   * Withdraws funds from this account.
    *
-   * @param amount the amount to withdraw; must be greater than zero and finite
+   * @param amount the amount to withdraw
+   * @throws AccountFrozenException if the account is frozen
+   * @throws InvalidAmountException if the amount is less than or equal to zero
+   * @throws InsufficientFundsException if the amount exceeds current balance
    */
-  public void withdraw(double amount) {
+  public void withdraw(double amount)
+      throws AccountFrozenException, InvalidAmountException, InsufficientFundsException {
     if (isFrozen) {
-      throw new AccountFrozenException();
+      throw new AccountFrozenException("Account is FROZEN. Unable to transact.");
     }
 
     System.out.printf("Amount withdrawn: %.2f%n", amount);
     if (!isValidAmount(amount)) {
-      throw new InvalidAmountException();
+      throw new InvalidAmountException("Invalid amount. Must be greater than 0");
     }
 
     if (amount > balance) {
-      throw new InsufficientFundsException(balance);
+      throw new InsufficientFundsException(
+          String.format("Insufficient balance.%nCurrent balance: %.2f", balance));
     }
 
     balance -= amount;
     transactionHistory.add(new Transaction("Withdraw", amount));
-    System.out.printf("Current balance: %.2f%n", balance);
   }
 
-  /**
-   * Returns the transactions made on this account.
-   *
-   * @return the transaction history
-   */
   public List<Transaction> getTransactionHistory() {
     return new ArrayList<>(transactionHistory);
   }
 
-  /**
-   * Returns the current account balance.
-   *
-   * @return the balance
-   */
   public double getBalance() {
     return balance;
   }
 
-  /** Prevents deposits and withdrawals on this account. */
   public void freezeAccount() {
     this.isFrozen = true;
   }
 
-  /** Allows deposits and withdrawals on this account again. */
   public void unfreezeAccount() {
     this.isFrozen = false;
   }
 
-  /**
-   * Reports whether this account is frozen.
-   *
-   * @return {@code true} if the account is frozen; otherwise {@code false}
-   */
   public boolean isFrozen() {
     return isFrozen;
   }
 
-  /**
-   * Checks whether an amount is a finite value greater than zero.
-   *
-   * @param amount the amount to validate
-   * @return {@code true} if the amount is finite and positive
-   */
   private boolean isValidAmount(double amount) {
     return Double.isFinite(amount) && amount > 0;
   }

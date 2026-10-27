@@ -1,18 +1,24 @@
 package exception;
 
 /**
- * Indicates that a withdrawal exceeds the account's available balance.
+ * Exception thrown when a withdrawal exceeds the available account balance.
  */
-public class InsufficientFundsException extends RuntimeException {
+public class InsufficientFundsException extends Exception {
   private static final long serialVersionUID = 1L;
+  private final String message;
 
   /**
-   * Creates an exception that reports the account's current balance.
+   * Constructs an InsufficientFundsException with the specified detail message.
    *
-   * @param currentBalance the balance available when the withdrawal was attempted
+   * @param message the detail message
    */
-  public InsufficientFundsException(double currentBalance) {
-    super(String.format(
-        "Insufficient balance.%nCurrent balance: %.2f", currentBalance));
+  public InsufficientFundsException(String message) {
+    super(message);
+    this.message = message;
+  }
+
+  @Override
+  public String getMessage() {
+    return message;
   }
 }

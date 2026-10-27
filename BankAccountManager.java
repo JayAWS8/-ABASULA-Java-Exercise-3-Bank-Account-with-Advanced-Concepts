@@ -6,86 +6,76 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Stores bank accounts and assigns each account a sequential ID.
+ * Stores bank accounts and provides filtering and sorting on transaction lists.
  */
 public class BankAccountManager implements Bank {
+  private static final int MAX_ACCOUNTS = 100;
   private final Map<Integer, BankAccount> accounts;
   private int nextAccountId;
 
-  /** Creates an empty bank account manager. */
   public BankAccountManager() {
     this.accounts = new LinkedHashMap<>();
     this.nextAccountId = 0;
   }
 
-  /**
-   * Adds an account and assigns it the next available ID.
-   *
-   * @param account the account to add
-   * @throws NullPointerException if {@code account} is {@code null}
-   */
   @Override
   public void addAccount(BankAccount account) {
     Objects.requireNonNull(account, "account must not be null");
+    if (accounts.size() >= MAX_ACCOUNTS) {
+      throw new IllegalStateException("Maximum number of accounts reached");
+    }
+
     int accountId = nextAccountId++;
     accounts.put(accountId, account);
     System.out.printf("Account added successfully with ID: %d%n", accountId);
   }
 
-  /**
-   * Returns the account with the specified ID.
-   *
-   * @param id the account ID
-   * @return the matching account, or {@code null} if no account has that ID
-   */
   @Override
   public BankAccount getAccount(int id) {
     return accounts.get(id);
   }
 
   /**
-   * Prints and returns transactions whose amounts meet the specified minimum.
+   * Filters transactions above or equal to a minimum amount using a lambda expression.
    *
-   * @param minimumAmount the minimum transaction amount, inclusive
-   * @param transactions the transactions to filter
-   * @return the matching transactions in their original order
-   * @throws NullPointerException if {@code transactions} is {@code null}
+   * @param amount the minimum threshold amount
+   * @param txList the list of transactions to filter
+   * @return filtered list of transactions
    */
-  public List<Transaction> filterTransactionsAtOrAbove(
-      double minimumAmount, List<Transaction> transactions) {
-    Objects.requireNonNull(transactions, "transactions must not be null");
-    String minimumAmountText =
-        minimumAmount == Math.rint(minimumAmount)
-            ? String.format("%.0f", minimumAmount)
-            : Double.toString(minimumAmount);
-    System.out.printf("Filtering transactions at or above %s...%n", minimumAmountText);
-    List<Transaction> filteredTransactions =
-        transactions.stream()
-            .filter(transaction -> transaction.getAmount() >= minimumAmount)
-            .collect(Collectors.toList());
-    System.out.println(filteredTransactions);
+  public List<Transaction> filterTransactionsAtOrAbove(double amount, List<Transaction> txList) {
+    Objects.requireNonNull(txList, "txList must not be null");
+    String amountText =
+        amount == Math.rint(amount)
+            ? String.format("%.0f", amount)
+            : Double.toString(amount);
+    System.out.printf("Filtering transactions at or above %s...%n", amountText);
+
+    List<Transaction> filteredTransactions = txList.stream()
+        .filter(tx -> tx.getAmount() >= amount)
+        .collect(Collectors.toList());
+
+    filteredTransactions.forEach(System.out::println);
     return filteredTransactions;
   }
 
   /**
-   * Prints and returns transactions sorted by amount in ascending order.
+   * Sorts transactions by amount in ascending order using a lambda expression.
    *
-   * @param transactions the transactions to sort
-   * @return a sorted copy of the transactions
-   * @throws NullPointerException if {@code transactions} is {@code null}
+   * @param txList the list of transactions to sort
+   * @return sorted list of transactions
    */
-  public List<Transaction> sortTransactionsByAmount(List<Transaction> transactions) {
-    Objects.requireNonNull(transactions, "transactions must not be null");
+  public List<Transaction> sortTransactionsByAmount(List<Transaction> txList) {
+    Objects.requireNonNull(txList, "txList must not be null");
     System.out.println("Sorting transactions by amount...");
-    List<Transaction> sortedTransactions =
-        transactions.stream()
-            .sorted(Comparator.comparingDouble(transaction -> transaction.getAmount()))
-            .collect(Collectors.toList());
-    System.out.println(sortedTransactions);
+
+    List<Transaction> sortedTransactions = txList.stream()
+        .sorted(Comparator.comparingDouble(tx -> tx.getAmount()))
+        .collect(Collectors.toList());
+
+    sortedTransactions.forEach(System.out::println);
     return sortedTransactions;
   }
 
-  /** Displays each account's ID, owner name, and current balance. */
   public void listAccounts() {
     for (Map.Entry<Integer, BankAccount> entry : accounts.entrySet()) {
       BankAccount account = entry.getValue();

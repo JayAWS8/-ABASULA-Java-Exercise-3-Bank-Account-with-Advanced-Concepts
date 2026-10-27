@@ -1,15 +1,24 @@
 package exception;
 
 /**
- * Indicates that a deposit or withdrawal amount is invalid.
+ * Exception thrown when an invalid deposit or withdrawal amount is provided.
  */
-public class InvalidAmountException extends RuntimeException {
+public class InvalidAmountException extends Exception {
   private static final long serialVersionUID = 1L;
+  private final String message;
 
   /**
-   * Creates an exception for a non-positive or non-finite amount.
+   * Constructs an InvalidAmountException with the specified detail message.
+   *
+   * @param message the detail message
    */
-  public InvalidAmountException() {
-    super("Invalid amount. Must be greater than 0");
+  public InvalidAmountException(String message) {
+    super(message);
+    this.message = message;
+  }
+
+  @Override
+  public String getMessage() {
+    return message;
   }
 }

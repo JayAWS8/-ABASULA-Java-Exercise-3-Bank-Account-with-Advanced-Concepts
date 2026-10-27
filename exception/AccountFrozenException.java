@@ -1,15 +1,24 @@
 package exception;
 
 /**
- * Indicates that an operation was attempted on a frozen bank account.
+ * Exception thrown when an operation is attempted on a frozen bank account.
  */
-public class AccountFrozenException extends RuntimeException {
+public class AccountFrozenException extends Exception {
   private static final long serialVersionUID = 1L;
+  private final String message;
 
   /**
-   * Creates an exception for an operation blocked by a frozen account.
+   * Constructs an AccountFrozenException with the specified detail message.
+   *
+   * @param message the detail message
    */
-  public AccountFrozenException() {
-    super("Account is FROZEN. Unable to transact.");
+  public AccountFrozenException(String message) {
+    super(message);
+    this.message = message;
+  }
+
+  @Override
+  public String getMessage() {
+    return message;
   }
 }
